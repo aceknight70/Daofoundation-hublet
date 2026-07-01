@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
+import { useData } from "../lib/useData";
 import { Video } from "../types";
 import { getStorage } from "../lib/storage";
 
 export const VideosRoom = () => {
-  const [videos, setVideos] = useState<Video[]>([]);
-
-  useEffect(() => {
-    setVideos(getStorage("videoData", []));
-  }, []);
+  const [videos, setVideos] = useData<Video[]>("videoData", []);
 
   const getEmbedUrl = (url: string) => {
     try {

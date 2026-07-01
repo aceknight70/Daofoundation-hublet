@@ -1,31 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ContactData, ContactCard } from "../../types";
-import { getStorage, setStorage } from "../../lib/storage";
+import { useData } from "../../lib/useData";
+
 import { showToast } from "../Toast";
 import { Trash } from "lucide-react";
 
 export const ConnectManager = () => {
-  const [data, setData] = useState<ContactData>({
+  const [data, setData] = useData<ContactData>("contactData", {
     contactCards: [],
     escalation: [],
   });
 
-  useEffect(() => {
-    setData(
-      getStorage("contactData", {
-        contactCards: [
-          { id: 1, title: "General Inquiries", phone: "", whatsapp: false, email: "" },
-          { id: 2, title: "Programme Inquiries", phone: "", whatsapp: false, email: "" },
-          { id: 3, title: "Escalation / Emergency", phone: "", whatsapp: false, email: "" },
-        ],
-        escalation: [],
-      }),
-    );
-  }, []);
-
   const save = (newData: ContactData) => {
     setData(newData);
-    setStorage("contactData", newData);
+    
   };
 
   // Contact Cards

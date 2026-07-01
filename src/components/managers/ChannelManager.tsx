@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
 import { ChannelData } from "../../types";
-import { getStorage, setStorage } from "../../lib/storage";
+import { useData } from "../../lib/useData";
 import { showToast } from "../Toast";
 
 export const ChannelManager = () => {
-  const [data, setData] = useState<ChannelData>({
+  const [data, setData] = useData<ChannelData>("channelData", {
     tiktok: "",
     facebook: "",
     instagram: "",
@@ -13,22 +12,8 @@ export const ChannelManager = () => {
     email: "",
   });
 
-  useEffect(() => {
-    setData(
-      getStorage("channelData", {
-        tiktok: "",
-        facebook: "",
-        instagram: "",
-        youtube: "",
-        website: "",
-        email: "",
-      }),
-    );
-  }, []);
-
   const save = (newData: ChannelData) => {
     setData(newData);
-    setStorage("channelData", newData);
     showToast("Channels saved", "success");
   };
 
@@ -47,7 +32,7 @@ export const ChannelManager = () => {
             </label>
             <input
               type="text"
-              value={value}
+              value={value as string}
               onChange={(e) =>
                 handleChange(key as keyof ChannelData, e.target.value)
               }

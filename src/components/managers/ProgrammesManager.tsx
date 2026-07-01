@@ -1,22 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Programme } from "../../types";
-import { getStorage, setStorage } from "../../lib/storage";
+import { useData } from "../../lib/useData";
+
 import { compressImage } from "../../lib/imageUtils";
+import { uploadImageToFirebase } from "../../lib/firebase";
 import { showToast } from "../Toast";
 import { Trash, Upload } from "lucide-react";
 
 export const ProgrammesManager = () => {
-  const [programmes, setProgrammes] = useState<Programme[]>([]);
+  const [programmes, setProgrammes] = useData<Programme[]>("programmeData", []);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeUploadId, setActiveUploadId] = useState<number | null>(null);
 
-  useEffect(() => {
-    setProgrammes(getStorage("programmeData", []));
-  }, []);
+  
 
   const save = (newProgs: Programme[]) => {
     setProgrammes(newProgs);
-    setStorage("programmeData", newProgs);
+    
   };
 
   const addProgramme = () => {

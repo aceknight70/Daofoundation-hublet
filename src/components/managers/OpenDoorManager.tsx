@@ -1,22 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Partner } from "../../types";
-import { getStorage, setStorage } from "../../lib/storage";
+import { useData } from "../../lib/useData";
+
 import { compressImage } from "../../lib/imageUtils";
+import { uploadImageToFirebase } from "../../lib/firebase";
 import { showToast } from "../Toast";
 import { Trash, Upload } from "lucide-react";
 
 export const OpenDoorManager = () => {
-  const [partners, setPartners] = useState<Partner[]>([]);
+  const [partners, setPartners] = useData<Partner[]>("partnerData", []);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeUploadId, setActiveUploadId] = useState<number | null>(null);
 
-  useEffect(() => {
-    setPartners(getStorage("partnerData", []));
-  }, []);
+  
 
   const save = (newPartners: Partner[]) => {
     setPartners(newPartners);
-    setStorage("partnerData", newPartners);
+    
   };
 
   const addPartner = () => {

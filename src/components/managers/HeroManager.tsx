@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-import { getStorage, setStorage } from "../../lib/storage";
+import { useRef } from "react";
 import { showToast } from "../Toast";
 import { compressImage } from "../../lib/imageUtils";
 import { HeroData } from "../../types";
+import { useData } from "../../lib/useData";
+import { uploadImageToFirebase } from "../../lib/firebase";
 
 export const HeroManager = () => {
-  const [data, setData] = useState<HeroData>({ 
+  const [data, setData] = useData<HeroData>("heroData", { 
     logo: "", 
     foundationName: "",
     foundationWebsite: "",
@@ -14,35 +15,25 @@ export const HeroManager = () => {
     aboutTitle: "About This Hublet",
     aboutContent: "Welcome to the Partnership for Goals Hublet\n\nThis hublet is a simple, easy-to-share link that serves as a digital storefront for your foundation, FBO, NGO, or CSS organization.\n\nHere you can:\n\n📸 Share your photos and stories (Gallery)\n🎬 Showcase your videos (Videos)\n🤝 Feature partnerships (Partner Programmes)\n📋 Highlight your programmes (Our Programmes)\n📡 Connect to social media (Channels)\n📞 Provide contact info (Connect)\n\nThis initiative comes from the SDGs Learning Lab, encouraging foundations, FBOs, NGOs & CSS to share their work and build partnerships for the Sustainable Development Goals."
   });
+  
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    setData(getStorage("heroData", { 
-      logo: "", 
-      foundationName: "",
-      foundationWebsite: "",
-      secondLogo: "",
-      aboutBtnText: "About This Hublet",
-      aboutTitle: "About This Hublet",
-      aboutContent: "Welcome to the Partnership for Goals Hublet\n\nThis hublet is a simple, easy-to-share link that serves as a digital storefront for your foundation, FBO, NGO, or CSS organization.\n\nHere you can:\n\n📸 Share your photos and stories (Gallery)\n🎬 Showcase your videos (Videos)\n🤝 Feature partnerships (Partner Programmes)\n📋 Highlight your programmes (Our Programmes)\n📡 Connect to social media (Channels)\n📞 Provide contact info (Connect)\n\nThis initiative comes from the SDGs Learning Lab, encouraging foundations, FBOs, NGOs & CSS to share their work and build partnerships for the Sustainable Development Goals."
-    }));
-  }, []);
-
   const save = (newData: typeof data) => {
     setData(newData);
-    setStorage("heroData", newData);
     showToast("Saved successfully", "success");
   };
 
   const handleUpload = async (file: File, key: "logo" | "secondLogo") => {
     try {
       const compressed = await compressImage(file);
-      save({ ...data, [key]: compressed });
+      const fbUrl = await uploadImageToFirebase(compressed, "logos", `${key}_${Date.now()}`);
+      save({ ...data, [key]: fbUrl || compressed });
     } catch {
       showToast("Error uploading image", "error");
     }
   };
+
 
   return (
     <div>

@@ -14,6 +14,7 @@ import { ConnectManager } from "./managers/ConnectManager";
 import { RoomManager } from "./managers/RoomManager";
 import { ThemeManager } from "./managers/ThemeManager";
 import { DataManager } from "./managers/DataManager";
+import { FirebaseManager } from "./managers/FirebaseManager";
 
 interface StaffRoomProps {
   rooms: RoomDef[];
@@ -79,6 +80,7 @@ export const StaffRoom = ({
     { id: "rooms", name: "Room Manager" },
     { id: "theme", name: "Theme Customizer" },
     { id: "data", name: "Data Manager" },
+    { id: "firebase", name: "Firebase Setup" },
   ];
 
   return (
@@ -130,6 +132,7 @@ export const StaffRoom = ({
           {activeTab === "connect" && <ConnectManager />}
           {activeTab === "theme" && <ThemeManager />}
           {activeTab === "data" && <DataManager />}
+          {activeTab === "firebase" && <FirebaseManager />}
           {activeTab === "rooms" && (
             <RoomManager
               rooms={rooms}

@@ -11,35 +11,48 @@ import { CustomRoom } from "./components/CustomRoom";
 import { DEFAULT_ROOMS, getStorage } from "./lib/storage";
 import { RoomDef } from "./types";
 import { Navigation } from "./components/Navigation";
+import { getFirebaseConfig, initFirebase, migrateLocalStorageToFirebase } from "./lib/firebase";
 
-import { ToastContainer } from "./components/Toast";
+import { useData } from "./lib/useData";
+
+import { ToastContainer, showToast } from "./components/Toast";
 
 export default function App() {
   const [activeSlug, setActiveSlug] = useState<string>(""); // empty means Cover Page
-  const [rooms, setRooms] = useState<RoomDef[]>([]);
-  const [roomOrder, setRoomOrder] = useState<string[]>([]);
+  const [rooms, setRooms] = useData<RoomDef[]>("roomData", DEFAULT_ROOMS);
+  const [roomOrder, setRoomOrder] = useData<string[]>("roomOrder", DEFAULT_ROOMS.map(r => r.slug));
+  const [migrating, setMigrating] = useState(false);
+  const [migrationStatus, setMigrationStatus] = useState("");
+  const [themeData] = useData<any>("themeData", null);
+
+  useEffect(() => {
+    const config = getFirebaseConfig();
+    if (config && !localStorage.getItem("firebaseMigrated")) {
+      initFirebase();
+      setMigrating(true);
+      migrateLocalStorageToFirebase(setMigrationStatus).then((success) => {
+        if (success) {
+          showToast("Data migrated to Firebase! ✅", "success");
+        }
+        setMigrating(false);
+      });
+    } else if (config) {
+      initFirebase();
+    }
+  }, []);
 
   useEffect(() => {
     // Load theme
-    const storedTheme = getStorage<any>("themeData", null);
-    if (storedTheme) {
-      document.documentElement.style.setProperty("--gr", storedTheme.primary);
-      document.documentElement.style.setProperty("--pk", storedTheme.secondary);
-      document.documentElement.style.setProperty("--bg", storedTheme.bg);
-      document.documentElement.style.setProperty("--text", storedTheme.text);
-      document.documentElement.style.setProperty("--outgoing-bg", storedTheme.outgoingBg);
+    if (themeData) {
+      document.documentElement.style.setProperty("--gr", themeData.primary);
+      document.documentElement.style.setProperty("--pk", themeData.secondary);
+      document.documentElement.style.setProperty("--bg", themeData.bg);
+      document.documentElement.style.setProperty("--text", themeData.text);
+      document.documentElement.style.setProperty("--outgoing-bg", themeData.outgoingBg);
     }
+  }, [themeData]);
 
-    // Load rooms
-    const storedRooms = getStorage<RoomDef[]>("roomData", DEFAULT_ROOMS);
-    setRooms(storedRooms);
-
-    const storedOrder = getStorage<string[]>(
-      "roomOrder",
-      storedRooms.map((r) => r.slug),
-    );
-    setRoomOrder(storedOrder);
-
+  useEffect(() => {
     const handleHashChange = () => {
       setActiveSlug(window.location.hash);
     };
@@ -107,6 +120,20 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pb-16">
       <ToastContainer />
+      {migrating && (
+        <div className="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin text-4xl mb-4">🔄</div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Migrating Data...</h2>
+            <p className="text-gray-600">{migrationStatus}</p>
+          </div>
+        </div>
+      )}
+      {!getFirebaseConfig() && (
+        <div className="bg-yellow-100 text-yellow-800 p-2 text-center text-sm font-bold shadow-sm z-50 relative">
+          Connect to Firebase for cloud storage (go to Staff Room)
+        </div>
+      )}
       {!isCoverPage && (
         <Navigation rooms={sortedRooms} activeSlug={activeSlug} />
       )}

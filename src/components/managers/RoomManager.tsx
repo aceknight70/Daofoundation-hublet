@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { RoomDef } from "../../types";
-import { setStorage } from "../../lib/storage";
+import { useData } from "../../lib/useData";
+
 import { showToast } from "../Toast";
 import { Trash, ArrowUp, ArrowDown } from "lucide-react";
 
@@ -22,8 +23,8 @@ export const RoomManager = ({
   const saveRooms = (newRooms: RoomDef[], newOrder: string[]) => {
     setRooms(newRooms);
     setRoomOrder(newOrder);
-    setStorage("roomData", newRooms);
-    setStorage("roomOrder", newOrder);
+    
+    
   };
 
   const addRoom = () => {
@@ -47,7 +48,7 @@ export const RoomManager = ({
       r.id === id ? { ...r, [field]: value } : r,
     );
     setRooms(newRooms);
-    setStorage("roomData", newRooms);
+    
     if (editingRoom && editingRoom.id === id) {
       setEditingRoom({ ...editingRoom, [field]: value } as RoomDef);
     }
@@ -75,7 +76,7 @@ export const RoomManager = ({
     newOrder[index + direction] = temp;
 
     setRoomOrder(newOrder);
-    setStorage("roomOrder", newOrder);
+    
   };
 
   // Get rooms sorted by order

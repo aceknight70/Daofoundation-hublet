@@ -1,24 +1,18 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ContactData } from "../types";
-import { getStorage } from "../lib/storage";
+import { useData } from "../lib/useData";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 export const ConnectRoom = () => {
-  const [contact, setContact] = useState<ContactData | null>(null);
+  const [contact] = useData<ContactData>("contactData", {
+    contactCards: [
+      { id: 1, title: "General Inquiries", phone: "", whatsapp: false, email: "" },
+      { id: 2, title: "Programme Inquiries", phone: "", whatsapp: false, email: "" },
+      { id: 3, title: "Escalation / Emergency", phone: "", whatsapp: false, email: "" },
+    ],
+    escalation: [],
+  });
   const [showEscalation, setShowEscalation] = useState(false);
-
-  useEffect(() => {
-    setContact(
-      getStorage("contactData", {
-        contactCards: [
-          { id: 1, title: "General Inquiries", phone: "", whatsapp: false, email: "" },
-          { id: 2, title: "Programme Inquiries", phone: "", whatsapp: false, email: "" },
-          { id: 3, title: "Escalation / Emergency", phone: "", whatsapp: false, email: "" },
-        ],
-        escalation: [],
-      }),
-    );
-  }, []);
 
   if (!contact) return null;
 

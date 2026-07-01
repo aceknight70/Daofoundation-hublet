@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { ChannelData } from "../types";
-import { getStorage } from "../lib/storage";
+import { useData } from "../lib/useData";
 
 export const ChannelsRoom = () => {
-  const [channels, setChannels] = useState<ChannelData>({
+  const [channels] = useData<ChannelData>("channelData", {
     tiktok: "",
     facebook: "",
     instagram: "",
@@ -12,18 +12,6 @@ export const ChannelsRoom = () => {
     email: "",
   });
 
-  useEffect(() => {
-    setChannels(
-      getStorage("channelData", {
-        tiktok: "",
-        facebook: "",
-        instagram: "",
-        youtube: "",
-        website: "",
-        email: "",
-      }),
-    );
-  }, []);
 
   const links = [
     {

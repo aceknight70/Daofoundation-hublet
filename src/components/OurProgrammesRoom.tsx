@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
 import { Programme } from "../types";
-import { getStorage } from "../lib/storage";
+import { useData } from "../lib/useData";
 import { X } from "lucide-react";
 
 export const OurProgrammesRoom = () => {
-  const [programmes, setProgrammes] = useState<Programme[]>([]);
+  const [programmes] = useData<Programme[]>("programmeData", []);
   const [selectedProg, setSelectedProg] = useState<Programme | null>(null);
 
-  useEffect(() => {
-    setProgrammes(getStorage("programmeData", []));
-  }, []);
 
   const displayProgrammes = [...programmes];
   while (displayProgrammes.length < 6) {

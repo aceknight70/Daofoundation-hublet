@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getStorage } from "../../lib/storage";
+import { getStorage, setStorage } from "../../lib/storage";
 import { showToast } from "../Toast";
 
 export const DataManager = () => {

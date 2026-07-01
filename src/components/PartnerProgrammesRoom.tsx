@@ -1,16 +1,12 @@
 import { useEffect, useState } from "react";
 import { Partner } from "../types";
-import { getStorage } from "../lib/storage";
+import { useData } from "../lib/useData";
 import { X } from "lucide-react";
 
 export const PartnerProgrammesRoom = () => {
-  const [partners, setPartners] = useState<Partner[]>([]);
+  const [partners] = useData<Partner[]>("partnerData", []);
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
 
-  useEffect(() => {
-    const loaded = getStorage<Partner[]>("partnerData", []);
-    setPartners(loaded);
-  }, []);
 
   const incoming = partners.filter((p) => p.isIncoming);
   const outgoing = partners.filter((p) => !p.isIncoming);

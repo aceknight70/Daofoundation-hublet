@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { getStorage } from "../lib/storage";
+import { useData } from "../lib/useData";
 import { HeroData } from "../types";
 
 export const CoverPage = () => {
-  const [heroData, setHeroData] = useState<HeroData>({
+  const [heroData] = useData<HeroData>("heroData", {
     logo: "",
     foundationName: "",
     foundationWebsite: "",
@@ -14,17 +14,6 @@ export const CoverPage = () => {
   });
   const [showAbout, setShowAbout] = useState(false);
 
-  useEffect(() => {
-    setHeroData(getStorage("heroData", {
-      logo: "",
-      foundationName: "",
-      foundationWebsite: "",
-      secondLogo: "",
-      aboutBtnText: "About This Hublet",
-      aboutTitle: "About This Hublet",
-      aboutContent: "Welcome to the Partnership for Goals Hublet\n\nThis hublet is a simple, easy-to-share link that serves as a digital storefront for your foundation, FBO, NGO, or CSS organization.\n\nHere you can:\n\n📸 Share your photos and stories (Gallery)\n🎬 Showcase your videos (Videos)\n🤝 Feature partnerships (Partner Programmes)\n📋 Highlight your programmes (Our Programmes)\n📡 Connect to social media (Channels)\n📞 Provide contact info (Connect)\n\nThis initiative comes from the SDGs Learning Lab, encouraging foundations, FBOs, NGOs & CSS to share their work and build partnerships for the Sustainable Development Goals."
-    }));
-  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[90vh] text-center">

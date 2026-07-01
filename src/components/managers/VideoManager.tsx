@@ -1,19 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Video } from "../../types";
-import { getStorage, setStorage } from "../../lib/storage";
+import { useData } from "../../lib/useData";
+
 import { showToast } from "../Toast";
 import { Trash } from "lucide-react";
 
 export const VideoManager = () => {
-  const [videos, setVideos] = useState<Video[]>([]);
-
-  useEffect(() => {
-    setVideos(getStorage("videoData", []));
-  }, []);
+  const [videos, setVideos] = useData<Video[]>("videoData", []);
 
   const save = (newVids: Video[]) => {
     setVideos(newVids);
-    setStorage("videoData", newVids);
+    
   };
 
   const addVideo = () => {

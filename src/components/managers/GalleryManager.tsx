@@ -1,27 +1,28 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Photo } from "../../types";
-import { getStorage, setStorage } from "../../lib/storage";
+import { useData } from "../../lib/useData";
+
 import { compressImage } from "../../lib/imageUtils";
+import { uploadImageToFirebase } from "../../lib/firebase";
 import { showToast } from "../Toast";
 import { Trash } from "lucide-react";
 
 export const GalleryManager = () => {
-  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [photos, setPhotos] = useData<Photo[]>("galleryData", []);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    setPhotos(getStorage("galleryData", []));
-  }, []);
+  
 
   const save = (newPhotos: Photo[]) => {
     setPhotos(newPhotos);
-    setStorage("galleryData", newPhotos);
+    
   };
 
   const handleUpload = async (file: File, id: number) => {
     try {
       const compressed = await compressImage(file);
-      save(photos.map((p) => (p.id === id ? { ...p, image: compressed } : p)));
+      const url = await uploadImageToFirebase(compressed, "gallery", `photo_${Date.now()}`);
+      save(photos.map((p) => (p.id === id ? { ...p, image: url || compressed } : p)));
       showToast("Photo uploaded", "success");
     } catch {
       showToast("Error uploading photo", "error");

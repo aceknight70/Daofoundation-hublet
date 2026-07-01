@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ThemeData } from "../../types";
-import { getStorage, setStorage } from "../../lib/storage";
+import { useData } from "../../lib/useData";
+
 import { showToast } from "../Toast";
 
 const PRESETS = [
@@ -15,24 +16,14 @@ const PRESETS = [
 ];
 
 export const ThemeManager = () => {
-  const [theme, setTheme] = useState<ThemeData>({
-    primary: "#1a5e7a",
-    secondary: "#e87a5d",
-    bg: "#faf8f5",
-    text: "#2d2d2d",
-    outgoingBg: "#fef3e8"
-  });
-
-  useEffect(() => {
-    setTheme(getStorage<ThemeData>("themeData", PRESETS[0]));
-  }, []);
+  const [theme, setTheme] = useData<ThemeData>("themeData", PRESETS[0]);
 
   const handleChange = (field: keyof ThemeData, value: string) => {
     setTheme({ ...theme, [field]: value });
   };
 
   const applyTheme = (newTheme: ThemeData) => {
-    setStorage("themeData", newTheme);
+    
     document.documentElement.style.setProperty("--gr", newTheme.primary);
     document.documentElement.style.setProperty("--pk", newTheme.secondary);
     document.documentElement.style.setProperty("--bg", newTheme.bg);
