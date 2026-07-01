@@ -3,13 +3,10 @@ import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, writeBatch, 
 import { getStorage as getFirebaseStorage, ref, uploadString, getDownloadURL } from "firebase/storage";
 import { getStorage } from "./storage";
 
+import firebaseConfig from "../../firebase-applet-config.json";
+
 export const getFirebaseConfig = () => {
-  try {
-    const config = localStorage.getItem("firebaseConfig");
-    return config ? JSON.parse(config) : null;
-  } catch (e) {
-    return null;
-  }
+  return firebaseConfig;
 };
 
 export const initFirebase = () => {
@@ -30,6 +27,10 @@ export const initFirebase = () => {
 export const getDb = () => {
   const app = initFirebase();
   if (!app) return null;
+  const config = getFirebaseConfig();
+  if (config && config.firestoreDatabaseId) {
+    return getFirestore(app, config.firestoreDatabaseId);
+  }
   return getFirestore(app);
 };
 
@@ -45,8 +46,16 @@ export const uploadImageToFirebase = async (base64String: string, folder: string
   
   try {
     const storageRef = ref(storage, `${folder}/${filename}`);
-    await uploadString(storageRef, base64String, 'data_url');
-    return await getDownloadURL(storageRef);
+    
+    // Add timeout to prevent hanging if Storage is not enabled
+    const uploadTask = async () => {
+      await uploadString(storageRef, base64String, 'data_url');
+      return await getDownloadURL(storageRef);
+    };
+    
+    const timeoutPromise = new Promise<null>((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
+    
+    return await Promise.race([uploadTask(), timeoutPromise]);
   } catch (error) {
     console.error("Firebase upload failed", error);
     return null;
@@ -76,19 +85,30 @@ export const migrateLocalStorageToFirebase = async (onProgress: (msg: string) =>
     for (const key of singletons) {
       const dataStr = localStorage.getItem(key);
       if (dataStr) {
-        let data = JSON.parse(dataStr);
+        let data;
+        try {
+          data = JSON.parse(dataStr);
+        } catch(e) {
+          data = dataStr;
+        }
+
         // Upload images if any
-        if (key === "heroData") {
-          if (data.logo && data.logo.startsWith("data:image")) {
+        if (key === "heroData" && data) {
+          if (data.logo && typeof data.logo === 'string' && data.logo.startsWith("data:image")) {
             const url = await uploadImageToFirebase(data.logo, "logos", `logo_${Date.now()}`);
             if (url) data.logo = url;
           }
-          if (data.secondLogo && data.secondLogo.startsWith("data:image")) {
+          if (data.secondLogo && typeof data.secondLogo === 'string' && data.secondLogo.startsWith("data:image")) {
             const url = await uploadImageToFirebase(data.secondLogo, "logos", `secondLogo_${Date.now()}`);
             if (url) data.secondLogo = url;
           }
         }
-        await setDoc(doc(db, "singletons", key), data);
+
+        let dataToSave = data;
+        if (typeof data !== 'object' || Array.isArray(data) || data === null) {
+          dataToSave = { value: data };
+        }
+        await setDoc(doc(db, "singletons", key), dataToSave);
       }
     }
 

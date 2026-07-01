@@ -36,7 +36,10 @@ export function useData<T>(key: string, defaultValue: T): [T, (val: T) => void] 
       const docRef = doc(db, "singletons", key);
       const unsub = onSnapshot(docRef, (docSnap) => {
         if (docSnap.exists()) {
-          const val = docSnap.data() as T;
+          let val = docSnap.data() as any;
+          if (val && val.hasOwnProperty('value') && Object.keys(val).length === 1) {
+            val = val.value;
+          }
           setData(val);
           localStorage.setItem(key, JSON.stringify(val));
         } else {
@@ -78,7 +81,11 @@ export function useData<T>(key: string, defaultValue: T): [T, (val: T) => void] 
       await batch.commit();
     } else {
       const docRef = doc(db, "singletons", key);
-      await setDoc(docRef, val as any);
+      let valToSave = val as any;
+      if (typeof valToSave !== 'object' || Array.isArray(valToSave) || valToSave === null) {
+        valToSave = { value: valToSave };
+      }
+      await setDoc(docRef, valToSave);
     }
   };
 
