@@ -1,0 +1,41 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Playfair+Display:wght@400;700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --color-primary: var(--gr);
+  --color-secondary: var(--pk);
+  --color-bg: var(--bg);
+  --color-text: var(--text);
+  --color-white: #ffffff;
+  --color-light: #f5f0eb;
+
+  --font-sans: "Nunito", system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+}
+
+:root {
+  --gr: #1a5e7a;
+  --pk: #e87a5d;
+  --bg: #faf8f5;
+  --text: #2d2d2d;
+  --white: #ffffff;
+  --light: #f5f0eb;
+  --incoming-bg: #ffffff;
+  --outgoing-bg: #fef3e8;
+  --outgoing-border: #e87a5d;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif);
+}
