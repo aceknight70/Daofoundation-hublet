@@ -13,6 +13,7 @@ import { ChannelManager } from "./managers/ChannelManager";
 import { ConnectManager } from "./managers/ConnectManager";
 import { RoomManager } from "./managers/RoomManager";
 import { ThemeManager } from "./managers/ThemeManager";
+import { DataManager } from "./managers/DataManager";
 
 interface StaffRoomProps {
   rooms: RoomDef[];
@@ -77,6 +78,7 @@ export const StaffRoom = ({
     { id: "connect", name: "Front Desk & Escalation" },
     { id: "rooms", name: "Room Manager" },
     { id: "theme", name: "Theme Customizer" },
+    { id: "data", name: "Data Manager" },
   ];
 
   return (
@@ -127,6 +129,7 @@ export const StaffRoom = ({
           {activeTab === "channels" && <ChannelManager />}
           {activeTab === "connect" && <ConnectManager />}
           {activeTab === "theme" && <ThemeManager />}
+          {activeTab === "data" && <DataManager />}
           {activeTab === "rooms" && (
             <RoomManager
               rooms={rooms}
