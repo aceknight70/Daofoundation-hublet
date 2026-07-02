@@ -15,6 +15,7 @@ import { getFirebaseConfig, initFirebase, migrateLocalStorageToFirebase } from "
 
 import { useData } from "./lib/useData";
 
+import { ResetApp } from "./components/ResetApp";
 import { ToastContainer, showToast } from "./components/Toast";
 
 export default function App() {
@@ -63,12 +64,18 @@ export default function App() {
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
+  // Ensure all rooms have a slug for backwards compatibility
+  const normalizedRooms = rooms.map(r => ({
+    ...r,
+    slug: r.slug || (r.id.toString().startsWith('#') ? r.id.toString() : `#${r.id}`)
+  }));
+
   const sortedRooms = roomOrder
-    .map((slug) => rooms.find((r) => r.slug === slug))
+    .map((slug) => normalizedRooms.find((r) => r.slug === slug))
     .filter((r): r is RoomDef => Boolean(r));
 
   // Add any new rooms that might not be in the order
-  rooms.forEach((r) => {
+  normalizedRooms.forEach((r) => {
     if (!sortedRooms.find((sr) => sr.slug === r.slug)) {
       sortedRooms.push(r);
     }
@@ -77,6 +84,10 @@ export default function App() {
   const activeRoom = sortedRooms.find((r) => r.slug === activeSlug);
 
   const renderActiveRoom = () => {
+    if (activeSlug === "#reset") {
+      return <ResetApp />;
+    }
+
     if (!activeSlug || activeSlug === "#cover") {
       return <CoverPage />;
     }
@@ -101,7 +112,7 @@ export default function App() {
       case "#staff":
         return (
           <StaffRoom
-            rooms={rooms}
+            rooms={normalizedRooms}
             setRooms={setRooms}
             roomOrder={roomOrder}
             setRoomOrder={setRoomOrder}

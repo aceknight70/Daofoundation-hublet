@@ -27,6 +27,23 @@ export const FirebaseManager = () => {
           </div>
         </div>
       </div>
+      
+      <div className="mt-8 border-t pt-6 border-red-100">
+        <h3 className="text-xl font-bold mb-2 text-red-600">Danger Zone</h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Completely reset the Firebase connection, clear all cached data, and delete all Firestore/Storage data.
+        </p>
+        <button 
+          onClick={() => {
+            if (confirm("Are you SURE you want to clear all data? This cannot be undone!")) {
+              window.location.hash = "#reset";
+            }
+          }}
+          className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Clear All Data & Reset
+        </button>
+      </div>
     </div>
   );
 };

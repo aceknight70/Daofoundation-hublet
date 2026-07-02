@@ -40,7 +40,13 @@ export const getStorageInstance = () => {
   return getFirebaseStorage(app);
 };
 
+let isStorageDisabled = false;
+
 export const uploadImageToFirebase = async (base64String: string, folder: string, filename: string): Promise<string | null> => {
+  if (isStorageDisabled) {
+    console.warn("Firebase Storage is marked as disabled/unavailable. Skipping upload.");
+    return null;
+  }
   const storage = getStorageInstance();
   if (!storage) return null;
   
@@ -53,11 +59,14 @@ export const uploadImageToFirebase = async (base64String: string, folder: string
       return await getDownloadURL(storageRef);
     };
     
-    const timeoutPromise = new Promise<null>((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
+    const timeoutPromise = new Promise<null>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000));
     
     return await Promise.race([uploadTask(), timeoutPromise]);
   } catch (error) {
     console.error("Firebase upload failed", error);
+    // If we hit a timeout or storage permission/setup error, disable storage for this session
+    isStorageDisabled = true;
+    console.warn("Storage upload failed or timed out. Disabling Firebase Storage uploads for this session to prevent hanging.");
     return null;
   }
 };

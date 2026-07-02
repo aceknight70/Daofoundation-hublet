@@ -10,7 +10,11 @@ export function useData<T>(key: string, defaultValue: T): [T, (val: T) => void] 
     const db = getDb();
     if (!db) return;
 
-    if (Array.isArray(defaultValue)) {
+    const isCollection = Array.isArray(defaultValue) && 
+      (defaultValue.length === 0 || typeof defaultValue[0] === 'object') && 
+      key !== 'roomOrder';
+
+    if (isCollection) {
       const colRef = collection(db, key);
       const unsub = onSnapshot(colRef, (snapshot) => {
         const items = snapshot.docs.map(d => {
@@ -28,8 +32,9 @@ export function useData<T>(key: string, defaultValue: T): [T, (val: T) => void] 
           return 0;
         });
 
-        setData(items as unknown as T);
-        localStorage.setItem(key, JSON.stringify(items));
+        const finalItems = items.length > 0 ? (items as unknown as T) : defaultValue;
+        setData(finalItems);
+        localStorage.setItem(key, JSON.stringify(finalItems));
       });
       return () => unsub();
     } else {
@@ -57,7 +62,11 @@ export function useData<T>(key: string, defaultValue: T): [T, (val: T) => void] 
     const db = getDb();
     if (!db) return;
 
-    if (Array.isArray(val)) {
+    const isCollection = Array.isArray(val) && 
+      (val.length === 0 || typeof val[0] === 'object') && 
+      key !== 'roomOrder';
+
+    if (isCollection) {
       const batch = writeBatch(db);
       const colRef = collection(db, key);
       
