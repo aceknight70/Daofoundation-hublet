@@ -1,3 +1,4 @@
+import { ImageWithLoader } from "../ImageWithLoader";
 import { useRef, useState } from "react";
 import { Programme } from "../../types";
 import { useData } from "../../lib/useData";
@@ -91,7 +92,7 @@ export const ProgrammesManager = () => {
           >
             <div className="w-1/4 flex flex-col gap-2">
               {prog.photo ? (
-                <img
+                <ImageWithLoader
                   src={prog.photo}
                   className="w-full aspect-square object-cover rounded border"
                 />

@@ -1,3 +1,4 @@
+import { ImageWithLoader } from "./ImageWithLoader";
 import { useEffect, useState } from "react";
 import { Partner } from "../types";
 import { useData } from "../lib/useData";
@@ -73,7 +74,7 @@ export const PartnerProgrammesRoom = () => {
         {heroPartner && (
           <div className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.1)] overflow-hidden mb-8 border border-gray-100">
             {heroPartner.coverImage ? (
-              <img
+              <ImageWithLoader
                 src={heroPartner.coverImage}
                 alt={heroPartner.partnerName}
                 className="w-full h-[350px] object-cover"
@@ -124,7 +125,7 @@ export const PartnerProgrammesRoom = () => {
                 className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col h-[350px] border border-gray-100 hover:-translate-y-1 transition-transform block"
               >
                 {p.coverImage ? (
-                  <img
+                  <ImageWithLoader
                     src={p.coverImage}
                     alt={p.partnerName}
                     className="w-full h-[60%] object-cover"
@@ -175,7 +176,7 @@ export const PartnerProgrammesRoom = () => {
               className={`bg-white rounded-xl shadow-md overflow-hidden flex flex-col h-[350px] transition-transform hover:-translate-y-1 ${p.details ? 'cursor-pointer' : ''}`}
             >
               {p.coverImage ? (
-                <img
+                <ImageWithLoader
                   src={p.coverImage}
                   alt={p.partnerName}
                   className="w-full h-[60%] object-cover"
@@ -228,7 +229,7 @@ export const PartnerProgrammesRoom = () => {
             </div>
 
             {selectedPartner.coverImage && (
-              <img
+              <ImageWithLoader
                 src={selectedPartner.coverImage}
                 alt={selectedPartner.partnerName}
                 className="w-full h-[300px] object-cover"

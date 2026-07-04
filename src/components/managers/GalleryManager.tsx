@@ -1,3 +1,4 @@
+import { ImageWithLoader } from "../ImageWithLoader";
 import { useRef, useState } from "react";
 import { Photo } from "../../types";
 import { useData } from "../../lib/useData";
@@ -71,7 +72,7 @@ export const GalleryManager = () => {
               <span className="text-sm font-bold block mb-2 text-gray-500">Photo #{index + 1}</span>
               {photo.image ? (
                 <div className="relative group">
-                  <img
+                  <ImageWithLoader
                     src={photo.image}
                     alt="Preview"
                     className="w-32 h-32 object-cover rounded"

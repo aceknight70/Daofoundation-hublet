@@ -41,15 +41,25 @@ export const VideosRoom = () => {
               key={video.id}
               className="bg-white rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.1)]"
             >
-              <div className="aspect-video bg-gray-100">
+              <div className="aspect-video bg-gray-100 relative">
                 {getEmbedUrl(video.youtubeUrl) ? (
-                  <iframe
-                    src={getEmbedUrl(video.youtubeUrl)}
-                    title={video.title}
-                    className="w-full h-full border-0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
+                  <>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100/80 z-0">
+                      <div className="w-8 h-8 border-4 border-gray-200 border-t-[var(--gr)] rounded-full animate-spin mb-2"></div>
+                      <span className="text-xs text-gray-500 font-medium">Loading video...</span>
+                    </div>
+                    <iframe
+                      src={getEmbedUrl(video.youtubeUrl)}
+                      title={video.title}
+                      className="relative w-full h-full border-0 z-10"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      onLoad={(e) => {
+                        const target = e.target as HTMLIFrameElement;
+                        target.previousElementSibling?.remove();
+                      }}
+                    />
+                  </>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400">
                     Invalid Video URL

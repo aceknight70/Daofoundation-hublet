@@ -20,11 +20,21 @@ import { ToastContainer, showToast } from "./components/Toast";
 
 export default function App() {
   const [activeSlug, setActiveSlug] = useState<string>(""); // empty means Cover Page
+  const [isSwitchingRoom, setIsSwitchingRoom] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [rooms, setRooms] = useData<RoomDef[]>("roomData", DEFAULT_ROOMS);
   const [roomOrder, setRoomOrder] = useData<string[]>("roomOrder", DEFAULT_ROOMS.map(r => r.slug));
   const [migrating, setMigrating] = useState(false);
   const [migrationStatus, setMigrationStatus] = useState("");
   const [themeData] = useData<any>("themeData", null);
+
+  useEffect(() => {
+    // Show initial loader for at least 2.5 seconds
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const config = getFirebaseConfig();
@@ -55,20 +65,34 @@ export default function App() {
 
   useEffect(() => {
     const handleHashChange = () => {
-      setActiveSlug(window.location.hash);
+      if (window.location.hash !== activeSlug) {
+        setIsSwitchingRoom(true);
+        setActiveSlug(window.location.hash);
+        setTimeout(() => {
+          setIsSwitchingRoom(false);
+        }, 1500); // brief spinner for room switch
+      }
     };
 
     window.addEventListener("hashchange", handleHashChange);
-    handleHashChange();
+    // Initial call without setting isSwitchingRoom (handled by initialLoading)
+    setActiveSlug(window.location.hash);
 
     return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
+  }, [activeSlug]);
 
   // Ensure all rooms have a slug for backwards compatibility
   const normalizedRooms = rooms.map(r => ({
     ...r,
     slug: r.slug || (r.id.toString().startsWith('#') ? r.id.toString() : `#${r.id}`)
   }));
+
+  // Guarantee all system rooms exist
+  DEFAULT_ROOMS.forEach(dr => {
+    if (!normalizedRooms.find(r => r.id === dr.id)) {
+      normalizedRooms.push(dr);
+    }
+  });
 
   const sortedRooms = roomOrder
     .map((slug) => normalizedRooms.find((r) => r.slug === slug))
@@ -128,6 +152,24 @@ export default function App() {
 
   const isCoverPage = !activeSlug || activeSlug === "#cover";
 
+  if (initialLoading) {
+    return (
+      <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans flex flex-col items-center justify-center p-4">
+        <div className="flex flex-col items-center justify-center flex-grow text-center animate-fade-in">
+          <div className="w-12 h-12 border-4 border-gray-200 border-t-[var(--gr)] rounded-full animate-spin mb-6 drop-shadow-md"></div>
+          <h2 className="text-2xl font-bold mb-2">Loading...</h2>
+          <p className="text-gray-500 mb-8 text-lg">Please wait</p>
+          <p className="text-sm text-gray-400">⏳ This may take a few seconds on mobile</p>
+        </div>
+        
+        <footer className="w-full max-w-md border-t border-gray-200 pt-6 text-center text-sm text-gray-500 mb-8 animate-fade-in">
+          <p className="font-bold mb-1">Partnership for Goals Hublet</p>
+          <p className="text-xs">Designed by FATAP-CT & ESGMC through the SDGs Learning Lab</p>
+        </footer>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pb-16">
       <ToastContainer />
@@ -149,7 +191,17 @@ export default function App() {
         <Navigation rooms={sortedRooms} activeSlug={activeSlug} />
       )}
 
-      <main className="max-w-4xl mx-auto px-4 py-8">{renderActiveRoom()}</main>
+      <main className="max-w-4xl mx-auto px-4 py-8 relative min-h-[50vh]">
+        {isSwitchingRoom ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[var(--bg)]/80 z-10 animate-fade-in">
+            <div className="w-10 h-10 border-4 border-gray-200 border-t-[var(--gr)] rounded-full animate-spin mb-4 drop-shadow"></div>
+            <p className="text-gray-500 font-medium">Loading...</p>
+          </div>
+        ) : null}
+        <div className={isSwitchingRoom ? "opacity-50" : "opacity-100 transition-opacity duration-300"}>
+          {renderActiveRoom()}
+        </div>
+      </main>
 
       {!isCoverPage && (
         <footer className="max-w-4xl mx-auto px-4 py-8 mt-12 border-t border-gray-200 text-center text-sm text-gray-500">

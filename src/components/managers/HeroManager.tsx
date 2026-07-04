@@ -1,3 +1,4 @@
+import { ImageWithLoader } from "../ImageWithLoader";
 import { useRef } from "react";
 import { showToast } from "../Toast";
 import { compressImage } from "../../lib/imageUtils";
@@ -46,7 +47,7 @@ export const HeroManager = () => {
           </label>
           <div className="flex gap-4 items-start">
             {data.logo && (
-              <img src={data.logo} alt="Logo" className="w-48 border rounded" />
+              <ImageWithLoader src={data.logo} alt="Logo" className="w-48 border rounded" />
             )}
             <div className="space-y-2 flex-grow">
               <button
@@ -109,7 +110,7 @@ export const HeroManager = () => {
           </label>
           <div className="flex gap-4 items-start">
             {data.secondLogo && (
-              <img
+              <ImageWithLoader
                 src={data.secondLogo}
                 alt="Second Logo"
                 className="w-32 border rounded"

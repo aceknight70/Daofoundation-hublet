@@ -1,3 +1,4 @@
+import { ImageWithLoader } from "./ImageWithLoader";
 import React, { useRef, useState } from "react";
 import { Photo } from "../types";
 import { useData } from "../lib/useData";
@@ -86,7 +87,7 @@ export const GalleryRoom = () => {
           >
             <div className="aspect-square bg-gray-100 flex items-center justify-center border-b border-gray-100 relative">
               {photo.image ? (
-                <img
+                <ImageWithLoader
                   src={photo.image}
                   alt={photo.caption}
                   className="w-full h-full object-cover"
@@ -133,7 +134,7 @@ export const GalleryRoom = () => {
               </button>
             </div>
             <div className="p-4">
-              <img
+              <ImageWithLoader
                 src={selectedPhoto.image}
                 alt={selectedPhoto.caption}
                 className="w-full rounded-lg mb-6"

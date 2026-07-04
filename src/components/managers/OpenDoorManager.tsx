@@ -1,3 +1,4 @@
+import { ImageWithLoader } from "../ImageWithLoader";
 import { useRef, useState } from "react";
 import { Partner } from "../../types";
 import { useData } from "../../lib/useData";
@@ -179,7 +180,7 @@ export const OpenDoorManager = () => {
             <div className="flex gap-4">
               <div className="w-1/3 flex flex-col gap-2">
                 {partner.coverImage ? (
-                  <img
+                  <ImageWithLoader
                     src={partner.coverImage}
                     className="w-full h-32 object-cover rounded border"
                   />

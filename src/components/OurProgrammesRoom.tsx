@@ -1,3 +1,4 @@
+import { ImageWithLoader } from "./ImageWithLoader";
 import { useEffect, useState } from "react";
 import { Programme } from "../types";
 import { useData } from "../lib/useData";
@@ -38,7 +39,7 @@ export const OurProgrammesRoom = () => {
           >
             <div className="aspect-square bg-gray-100 relative">
               {prog.photo ? (
-                <img
+                <ImageWithLoader
                   src={prog.photo}
                   alt={prog.name}
                   className="w-full h-full object-cover"
@@ -80,7 +81,7 @@ export const OurProgrammesRoom = () => {
             </div>
 
             {selectedProg.photo && (
-              <img
+              <ImageWithLoader
                 src={selectedProg.photo}
                 alt={selectedProg.name}
                 className="w-full max-h-[400px] object-cover"

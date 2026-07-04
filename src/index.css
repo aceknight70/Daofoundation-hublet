@@ -11,6 +11,13 @@
 
   --font-sans: "Nunito", system-ui, sans-serif;
   --font-serif: "Playfair Display", Georgia, serif;
+  
+  --animate-fade-in: fade-in 0.3s ease-out;
+
+  @keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
 }
 
 :root {

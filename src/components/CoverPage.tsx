@@ -1,3 +1,4 @@
+import { ImageWithLoader } from "./ImageWithLoader";
 import { useEffect, useState } from "react";
 import { useData } from "../lib/useData";
 import { HeroData } from "../types";
@@ -18,7 +19,7 @@ export const CoverPage = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-[90vh] text-center">
       {heroData.logo ? (
-        <img
+        <ImageWithLoader
           src={heroData.logo}
           alt="Organization Logo"
           className="w-full max-w-[600px] mb-12 object-contain"
@@ -51,7 +52,7 @@ export const CoverPage = () => {
       )}
 
       {heroData.secondLogo ? (
-        <img
+        <ImageWithLoader
           src={heroData.secondLogo}
           alt="Second Logo"
           className="w-48 h-48 mb-12 object-contain"
